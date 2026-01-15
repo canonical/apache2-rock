@@ -1,0 +1,15 @@
+summary: Create all-defaults apache2 container (ipv6 test)
+
+execute: |
+
+  # Clean up on exit
+  trap "docker stop apache2-rock >/dev/null 2>&1 || true" EXIT
+
+  # Run the Apache2 container
+  docker run -d --rm --name apache2-rock -p 8080:80 apache2:2.4-26.04
+
+  # Wait for port 8080 to be ready
+  sleep 5
+
+  # Test Apache is responding
+  curl -sS http://[::1]:8080 | grep -Fq "It works!"
