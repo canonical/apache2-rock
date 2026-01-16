@@ -31,7 +31,11 @@ jobs:
     steps:
       - id: set-map
         run: |
-          echo 'arch-map={"amd64":["ubuntu-24.04"],"arm64":["ubuntu-24.04-arm"]}' >> $GITHUB_OUTPUT
+          if [[ "${{ github.repository_owner }}" == "canonical" ]]; then
+            echo 'arch-map={"amd64":["X64","large","noble"],"arm64":["ARM64","medium","noble"],"s390x":["s390x","noble"],"ppc64el": ["ppc64le","noble"]}' >> $GITHUB_OUTPUT
+          else
+            echo 'arch-map={"amd64":["ubuntu-24.04"],"arm64":["ubuntu-24.04-arm"]}' >> $GITHUB_OUTPUT
+          fi
 
   # Why do we need this duplicate job and reusable Build-Rock workflow?
   # - the Build-Rock wf may need an an environment setup that relies on an internal action

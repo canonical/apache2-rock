@@ -14,8 +14,8 @@ build-base: devel
 platforms:
   amd64:
   arm64:
-  # ppc64el:
-  # s390x:
+  ppc64el:
+  s390x:
 
 services:
   apache-server:
