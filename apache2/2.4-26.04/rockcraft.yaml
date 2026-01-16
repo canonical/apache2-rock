@@ -14,7 +14,7 @@ build-base: devel
 platforms:
   amd64:
   arm64:
-  ppc64el:
+  # ppc64el:
   # s390x:
 
 services:
