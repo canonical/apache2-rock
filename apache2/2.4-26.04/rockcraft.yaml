@@ -15,7 +15,7 @@ platforms:
   amd64:
   arm64:
   ppc64el:
-  s390x:
+  # s390x:
 
 services:
   apache-server:
