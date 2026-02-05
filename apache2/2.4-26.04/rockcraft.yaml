@@ -41,7 +41,7 @@ parts:
       - base-files_release-info
       - base-passwd_data
       - apache2_core
-      - apache2_default-site
+      - apache2_index
       - tzdata_zoneinfo
     override-prime: |
       craftctl default
