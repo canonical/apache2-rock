@@ -33,21 +33,16 @@ environment:
   LANG: C
 
 parts: 
-  # TODO replace by stage-packages once slices are published
   apache2:
     plugin: nil
-    source: https://github.com/alesancor1/chisel-releases.git
-    source-type: git
-    source-branch: 26.04/apache2
-    override-build: |
-      chisel cut --ignore=unstable --release ./ --root ${CRAFT_PART_INSTALL} \
-        base-files_base \
-        base-files_chisel \
-        base-files_release-info \
-        base-passwd_data \
-        apache2_core \
-        apache2_default-site \
-        tzdata_zoneinfo
+    stage-packages:
+      - base-files_base
+      - base-files_chisel
+      - base-files_release-info
+      - base-passwd_data
+      - apache2_core
+      - apache2_default-site
+      - tzdata_zoneinfo
     override-prime: |
       craftctl default
       echo "" > ${CRAFT_PRIME}/etc/apache2/envvars
