@@ -1,0 +1,73 @@
+name: apache2
+version: "2.4"
+
+summary: Apache, a secure & extensible open-source HTTP server. Long-term tracks maintained by Canonical.
+description: |
+  The Apache HTTP Server Project's goal is to build a secure, efficient and
+  extensible HTTP server as standards-compliant open source software. 
+  The result has long been the number one web server on the Internet.
+
+base: bare
+# TODO change to 26.04 once 26.04 is officially released
+build-base: devel
+
+platforms:
+  amd64:
+  arm64:
+  ppc64el:
+  s390x:
+
+services:
+  apache-server:
+    override: replace
+    command: /usr/local/bin/start-apache.sh
+    startup: enabled
+
+environment:
+  APACHE_RUN_USER: www-data
+  APACHE_RUN_GROUP: www-data
+  APACHE_PID_FILE: /var/run/apache2/apache2.pid
+  APACHE_RUN_DIR: /var/run/apache2
+  APACHE_LOCK_DIR: /var/lock/apache2
+  APACHE_LOG_DIR: /var/log/apache2
+  LANG: C
+
+parts: 
+  apache2:
+    plugin: nil
+    stage-packages:
+      - base-files_base
+      - base-files_chisel
+      - base-files_release-info
+      - base-passwd_data
+      - apache2_core
+      - apache2_index
+      - tzdata_zoneinfo
+    override-prime: |
+      craftctl default
+      echo "" > ${CRAFT_PRIME}/etc/apache2/envvars
+
+  apachectl:
+    plugin: dump
+    source: .
+    source-type: local
+    stage-packages:
+      - coreutils_mkdir
+      - coreutils_chown
+      - dash_bins
+    organize: 
+      'start-apache.sh': usr/local/bin/start-apache.sh
+    stage:
+      - usr
+    override-prime: |
+      craftctl default
+
+      # Set execute permissions on the start script
+      chmod +x ${CRAFT_PRIME}/usr/local/bin/start-apache.sh
+
+  deb-security-manifest:
+    plugin: make
+    source: https://github.com/canonical/rocks-security-manifest
+    source-type: git
+    source-branch: main
+    override-prime: gen_manifest
