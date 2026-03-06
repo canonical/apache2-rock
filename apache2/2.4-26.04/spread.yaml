@@ -12,6 +12,27 @@ suites:
     summary: General integration tests
 
     prepare: |
+      sudo snap install docker
+
+      # For 'rockcraft.skopeo'
+      sudo snap install --classic rockcraft
+
+      # Wait for docker daemon to come online
+      sudo apt install --yes retry
+      retry --times=10 --delay 2 -- docker images
+      sudo apt remove --yes retry
+
+      # Load the rock into docker
+      sudo rockcraft.skopeo --insecure-policy copy "oci-archive:$CRAFT_ARTIFACT" docker-daemon:apache2:2.4-26.04
+
+    restore: |
+      docker image rm --force apache2:2.4-26.04
+
+
+  spread/k8s/:
+    summary: K8s integration tests
+
+    prepare: |
       sudo snap install rockcraft --classic
       sudo snap install microk8s --classic
       
