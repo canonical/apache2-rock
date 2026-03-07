@@ -34,7 +34,13 @@ suites:
 
     prepare: |
       sudo snap install rockcraft --classic
-      sudo snap install microk8s --classic
+      
+      # on s390x we need to install microk8s from the candidate channel
+      CHANNEL="stable"
+      if [ "$(uname -m)" = "s390x" ]; then
+        CHANNEL="candidate"
+      fi
+      sudo snap install microk8s --classic --channel=$CHANNEL
       
       # Wait for microk8s to be ready and enable the registry
       microk8s status --wait-ready
