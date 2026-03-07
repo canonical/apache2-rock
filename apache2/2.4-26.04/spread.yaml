@@ -35,10 +35,10 @@ suites:
     prepare: |
       sudo snap install rockcraft --classic
       
-      # on s390x we need to install microk8s from the beta channel
+      # on s390x we need to install microk8s from the edge channel
       CHANNEL="stable"
       if [ "$(uname -m)" = "s390x" ]; then
-        CHANNEL="beta"
+        CHANNEL="edge"
       fi
       sudo snap install microk8s --classic --channel=$CHANNEL
       
