@@ -35,9 +35,9 @@ suites:
     prepare: |
       sudo snap install rockcraft --classic
       
-      # on s390x we need to install microk8s from the edge channel
+      # on s390x and ppc64le we need to install microk8s from the edge channel
       CHANNEL="stable"
-      if [ "$(uname -m)" = "s390x" ]; then
+      if [ "$(uname -m)" = "s390x" ] || [ "$(uname -m)" = "ppc64le" ]; then
         CHANNEL="edge"
       fi
       sudo snap install microk8s --classic --channel=$CHANNEL
