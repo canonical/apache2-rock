@@ -8,8 +8,7 @@ description: |
   The result has long been the number one web server on the Internet.
 
 base: bare
-# TODO change to 26.04 once 26.04 is officially released
-build-base: devel
+build-base: ubuntu@26.04
 
 platforms:
   amd64:
