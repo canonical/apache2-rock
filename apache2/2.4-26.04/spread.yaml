@@ -34,23 +34,21 @@ suites:
 
     prepare: |
       sudo snap install rockcraft --classic
-      
+
       # on s390x and ppc64le we need to install microk8s from the edge channel
       CHANNEL="stable"
       if [ "$(uname -m)" = "s390x" ] || [ "$(uname -m)" = "ppc64le" ]; then
         CHANNEL="edge"
       fi
-      sudo snap install microk8s --classic --channel=$CHANNEL
-      
-      # Wait for microk8s to be ready and enable the registry
-      microk8s status --wait-ready
-      microk8s enable registry
-      microk8s kubectl rollout status deployment/registry -n container-registry --timeout=120s
+      sudo snap install k8s --classic --channel=$CHANNEL
+
+      # Bootstrap k8s and wait for it to be ready
+      k8s bootstrap
+      k8s status --wait-ready
 
       # Copy the built image to the local registry
-      rockcraft.skopeo --insecure-policy copy --dest-tls-verify=false \
-        "oci-archive:$CRAFT_ARTIFACT" \
-        "docker://localhost:32000/apache2:2.4-26.04"
+      /snap/k8s/current/bin/ctr --address /run/containerd/containerd.sock -n k8s.io \
+        images import --base-name docker.io/library/apache2 $CRAFT_ARTIFACT
 
 exclude:
   - .git

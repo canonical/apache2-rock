@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: apache2
-        image: ubuntu/apache2:latest
+        image: apache2:2.4
         volumeMounts:
         - name: apache2-config-volume
           mountPath: /etc/apache2/apache2.conf

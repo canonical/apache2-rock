@@ -1,8 +1,8 @@
-summary: apache2 microk8 test
+summary: apache2 k8s test
 
 execute: |
-  microk8s kubectl create configmap apache2-config --from-file=apache2=apache2.conf --from-file=apache2-site=index.html
-  microk8s kubectl apply -f deployment.yaml
+  k8s kubectl create configmap apache2-config --from-file=apache2=apache2.conf --from-file=apache2-site=index.html
+  k8s kubectl apply -f deployment.yaml
 
   timeout 30 bash -c 'until curl -sSf http://127.0.0.1:30080 >/dev/null; do sleep 1; done'
 
