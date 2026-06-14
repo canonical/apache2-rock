@@ -1,6 +1,16 @@
 summary: apache2 k8s test
 
 execute: |
+
+  # Cilium (CNI) is not yet supported on s390x and ppc64le
+  # so we'll skip the k8s tests on those architectures for now
+  # ---
+  # TODO: Remove this check once Cilium supports s390x and ppc64le
+  if [ "$(uname -m)" = "s390x" ] || [ "$(uname -m)" = "ppc64le" ]; then
+    echo "Skipping k8s tests on $(uname -m) architecture"
+    exit 0
+  fi
+
   k8s kubectl create configmap apache2-config --from-file=apache2=apache2.conf --from-file=apache2-site=index.html
   k8s kubectl apply -f deployment.yaml
 

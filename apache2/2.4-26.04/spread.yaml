@@ -33,6 +33,15 @@ suites:
     summary: K8s integration tests
 
     prepare: |
+      # Cilium (CNI) is not yet supported on s390x and ppc64le
+      # so we'll skip the k8s tests on those architectures for now
+      # ---
+      # TODO: Remove this check once Cilium supports s390x and ppc64le
+      if [ "$(uname -m)" = "s390x" ] || [ "$(uname -m)" = "ppc64le" ]; then
+        echo "Skipping k8s tests on $(uname -m) architecture"
+        exit 0
+      fi
+
       # Cleanup containerd
       sudo snap remove docker
       sudo systemctl stop containerd || true
@@ -40,13 +49,7 @@ suites:
 
       # Install rockcraft and k8s snaps
       sudo snap install rockcraft --classic
-
-      # on s390x and ppc64le we need to install k8s from the edge channel
-      CHANNEL="stable"
-      if [ "$(uname -m)" = "s390x" ] || [ "$(uname -m)" = "ppc64le" ]; then
-        CHANNEL="latest/edge"
-      fi
-      sudo snap install k8s --classic --channel=$CHANNEL
+      sudo snap install k8s --classic
 
       # Bootstrap k8s and wait for it to be ready
       k8s bootstrap
