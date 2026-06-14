@@ -33,7 +33,12 @@ suites:
     summary: K8s integration tests
 
     prepare: |
+      # Cleanup containerd
       sudo snap remove docker
+      sudo systemctl stop containerd || true
+      sudo rm -rf /run/containerd /var/lib/containerd /etc/containerd || true
+
+      # Install rockcraft and k8s snaps
       sudo snap install rockcraft --classic
 
       # on s390x and ppc64le we need to install k8s from the edge channel
@@ -42,10 +47,6 @@ suites:
         CHANNEL="latest/edge"
       fi
       sudo snap install k8s --classic --channel=$CHANNEL
-
-      # Cleanup containerd
-      sudo rm -rf /run/containerd
-      sudo rm -rf /var/run/containerd
 
       # Bootstrap k8s and wait for it to be ready
       k8s bootstrap
