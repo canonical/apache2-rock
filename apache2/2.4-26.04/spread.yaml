@@ -33,14 +33,19 @@ suites:
     summary: K8s integration tests
 
     prepare: |
+      sudo snap remove docker
       sudo snap install rockcraft --classic
 
-      # on s390x and ppc64le we need to install microk8s from the edge channel
+      # on s390x and ppc64le we need to install k8s from the edge channel
       CHANNEL="stable"
       if [ "$(uname -m)" = "s390x" ] || [ "$(uname -m)" = "ppc64le" ]; then
-        CHANNEL="edge"
+        CHANNEL="latest/edge"
       fi
       sudo snap install k8s --classic --channel=$CHANNEL
+
+      # Cleanup containerd
+      sudo rm -rf /run/containerd
+      sudo rm -rf /var/run/containerd
 
       # Bootstrap k8s and wait for it to be ready
       k8s bootstrap
