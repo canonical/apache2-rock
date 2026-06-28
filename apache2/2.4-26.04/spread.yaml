@@ -59,6 +59,10 @@ suites:
       /snap/k8s/current/bin/ctr --address /run/containerd/containerd.sock -n k8s.io \
         images import --base-name docker.io/library/apache2 $CRAFT_ARTIFACT
 
+    restore: |
+      /snap/k8s/current/bin/ctr --address /run/containerd/containerd.sock -n k8s.io \
+        images rm docker.io/library/apache2:2.4 || true
+
 exclude:
   - .git
 
