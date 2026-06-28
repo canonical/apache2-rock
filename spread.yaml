@@ -28,6 +28,41 @@ suites:
     restore: |
       docker image rm --force apache2:2.4-26.04
 
+
+  spread/k8s/:
+    summary: K8s integration tests
+
+    prepare: |
+      # Cilium (CNI) is not yet supported on s390x and ppc64le
+      # so we'll skip the k8s tests on those architectures for now
+      # ---
+      # TODO: Remove this check once Cilium supports s390x and ppc64le
+      if [ "$(uname -m)" = "s390x" ] || [ "$(uname -m)" = "ppc64le" ]; then
+        echo "Skipping k8s tests on $(uname -m) architecture"
+        exit 0
+      fi
+
+      # Cleanup containerd
+      sudo snap remove docker
+      sudo systemctl stop containerd || true
+      sudo rm -rf /run/containerd /var/lib/containerd /etc/containerd || true
+
+      # Install rockcraft and k8s snaps
+      sudo snap install rockcraft --classic
+      sudo snap install k8s --classic
+
+      # Bootstrap k8s and wait for it to be ready
+      k8s bootstrap
+      k8s status --wait-ready
+
+      # Copy the built image to the local registry
+      /snap/k8s/current/bin/ctr --address /run/containerd/containerd.sock -n k8s.io \
+        images import --base-name docker.io/library/apache2 $CRAFT_ARTIFACT
+
+    restore: |
+      /snap/k8s/current/bin/ctr --address /run/containerd/containerd.sock -n k8s.io \
+        images rm docker.io/library/apache2:2.4 || true
+
 exclude:
   - .git
 
