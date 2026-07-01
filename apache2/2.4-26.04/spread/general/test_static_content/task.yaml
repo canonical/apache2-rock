@@ -3,7 +3,7 @@ summary: Create an apache2 container serving static content
 execute: |
 
   # Clean up on exit
-  trap "docker stop apache2-rock >/dev/null 2>&1 || true" EXIT
+  trap "docker rm -f apache2-rock >/dev/null 2>&1 || true" EXIT
 
   # Run the Apache2 container
   docker run -d --rm --name apache2-rock -p 8080:80 -v $(pwd)/static:/var/www/html:ro apache2:2.4-26.04

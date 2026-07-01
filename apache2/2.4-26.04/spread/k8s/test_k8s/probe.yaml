@@ -1,0 +1,77 @@
+# Test-only resources for the cluster-dns probe (kept out of deployment.yaml and
+# apache2.conf so those stay clean examples). A second apache2 pod configured as a
+# proxy: serving /probe makes it resolve apache2-service by name via coredns, then
+# proxy to it.
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: apache2-probe-config
+data:
+  apache2.conf: |
+    User ${APACHE_RUN_USER}
+    Group ${APACHE_RUN_GROUP}
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+
+    IncludeOptional mods-enabled/*.load
+    IncludeOptional mods-enabled/*.conf
+
+    # proxy isn't enabled by default in the rock; load it for the /probe check.
+    LoadModule proxy_module /usr/lib/apache2/modules/mod_proxy.so
+    LoadModule proxy_http_module /usr/lib/apache2/modules/mod_proxy_http.so
+
+    Include ports.conf
+
+    <VirtualHost *:80>
+        # resolve apache2-service via dns, then proxy to it.
+        ProxyPass /probe http://apache2-service.default.svc.cluster.local:80/
+        ProxyPassReverse /probe http://apache2-service.default.svc.cluster.local:80/
+    </VirtualHost>
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apache2-probe
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: apache2-probe
+  template:
+    metadata:
+      labels:
+        app: apache2-probe
+    spec:
+      containers:
+      - name: apache2
+        image: apache2:2.4
+        volumeMounts:
+        - name: apache2-config-volume
+          mountPath: /etc/apache2/apache2.conf
+          subPath: apache2.conf
+        ports:
+        - containerPort: 80
+          name: apache2
+          protocol: TCP
+      volumes:
+        - name: apache2-config-volume
+          configMap:
+            name: apache2-probe-config
+            items:
+            - key: apache2.conf
+              path: apache2.conf
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: apache2-probe-service
+spec:
+  type: NodePort
+  selector:
+    app: apache2-probe
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+    nodePort: 30081
+    name: apache

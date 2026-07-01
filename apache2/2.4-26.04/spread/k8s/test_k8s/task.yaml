@@ -17,3 +17,8 @@ execute: |
   timeout 30 bash -c 'until curl -sSf http://127.0.0.1:30080 >/dev/null; do sleep 1; done'
 
   curl -sSf http://127.0.0.1:30080 | grep "It works!"
+
+  # Separate pod for running /probe which proxies to the first pod with dns
+  k8s kubectl apply -f probe.yaml
+  k8s kubectl rollout status deploy/apache2-probe --timeout=120s
+  curl -sSf http://127.0.0.1:30081/probe | grep "It works!"
