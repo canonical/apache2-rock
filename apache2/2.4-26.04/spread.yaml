@@ -55,6 +55,11 @@ suites:
       k8s bootstrap
       k8s status --wait-ready
 
+      # status --wait-ready returns before cilium finishes converging, so a service
+      # deployed now may not route (nodeport backends unprogrammed) for ~35s -- past
+      # the test's 30s wait. wait for kube-system to actually settle.
+      k8s kubectl wait --for=condition=Ready pods --all --namespace kube-system --timeout=5m
+
       # Copy the built image to the local registry
       /snap/k8s/current/bin/ctr --address /run/containerd/containerd.sock -n k8s.io \
         images import --base-name docker.io/library/apache2 $CRAFT_ARTIFACT
