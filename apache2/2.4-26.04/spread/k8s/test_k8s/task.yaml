@@ -17,3 +17,8 @@ execute: |
   timeout 30 bash -c 'until curl -sSf http://127.0.0.1:30080 >/dev/null; do sleep 1; done'
 
   curl -sSf http://127.0.0.1:30080 | grep "It works!"
+
+  # DNS check: /probe makes apache resolve its own headless Service via coredns
+  # before proxying to itself. mid-convergence coredns has no backends -> apache
+  # can't resolve -> 500 -> curl -f fails. green (200) once dns settles.
+  curl -sSf http://127.0.0.1:30080/probe | grep "It works!"
