@@ -47,8 +47,6 @@ suites:
       sudo systemctl stop containerd || true
       sudo rm -rf /run/containerd /var/lib/containerd /etc/containerd || true
 
-      # Install rockcraft and k8s snaps
-      sudo snap install rockcraft --classic
       sudo snap install k8s --classic
 
       # Bootstrap k8s and wait for it to be ready
