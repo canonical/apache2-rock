@@ -63,10 +63,3 @@ parts:
 
       # Set execute permissions on the start script
       chmod +x ${CRAFT_PRIME}/usr/local/bin/start-apache.sh
-
-  deb-security-manifest:
-    plugin: make
-    source: https://github.com/canonical/rocks-security-manifest
-    source-type: git
-    source-branch: main
-    override-prime: gen_manifest
