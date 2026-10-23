@@ -8,7 +8,7 @@ description: |
   The result has long been the number one web server on the Internet.
 
 base: bare
-build-base: ubuntu@26.04
+build-base: devel
 
 platforms:
   amd64:

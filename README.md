@@ -9,4 +9,4 @@ repository.
 
 ## Available versions
 
-* [apache2-2.4 (Ubuntu 26.04)](./apache2/2.4-26.04/rockcraft.yaml)
+* [apache2-2.4 (Ubuntu 26.04)](https://github.com/canonical/apache2-rock/tree/2.4-26.04)

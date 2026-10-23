@@ -1,4 +1,4 @@
-summary: Create an apache2 container with custom configuration
+summary: Create an apache2 container serving static content
 
 execute: |
 
@@ -6,17 +6,14 @@ execute: |
   trap "docker rm -f apache2-rock >/dev/null 2>&1 || true" EXIT
 
   # Run the Apache2 container
-  docker run -d --rm --name apache2-rock -p 8080:80 \
-    -v $(pwd)/html:/srv/www:ro \
-    -v $(pwd)/apache2.conf:/etc/apache2/apache2.conf:ro \
-    apache2:2.4-26.04
+  docker run -d --rm --name apache2-rock -p 8080:80 -v $(pwd)/static:/var/www/html:ro apache2:devel
 
   # Wait for Apache to be ready (timeout after 30 seconds)
   timeout 30 bash -c 'until curl -sSf http://127.0.0.1:8080 >/dev/null; do sleep 1; done'
 
   # Get checksums of original and retrieved file
-  response=$(curl -sS http://127.0.0.1:8080)
-  orig_checksum=$(md5sum $(pwd)/html/index.html | awk '{print $1}')
+  response=$(curl -sS http://127.0.0.1:8080/test.txt)
+  orig_checksum=$(md5sum $(pwd)/static/test.txt | awk '{print $1}')
   retrieved_checksum=$(printf "%s" "$response" | md5sum | awk '{print $1}')
 
   # Check that the checksums match

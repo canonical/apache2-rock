@@ -6,7 +6,7 @@ execute: |
   trap "docker rm -f apache2-rock >/dev/null 2>&1 || true" EXIT
 
   # Run the Apache2 container
-  docker run -d --rm --name apache2-rock -p 8080:80 apache2:2.4-26.04
+  docker run -d --rm --name apache2-rock -p 8080:80 apache2:devel
 
   # Wait for Apache to be ready (timeout after 30 seconds)
   timeout 30 bash -c 'until curl -sSf http://127.0.0.1:8080 >/dev/null; do sleep 1; done'
