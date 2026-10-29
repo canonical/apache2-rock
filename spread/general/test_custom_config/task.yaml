@@ -9,7 +9,7 @@ execute: |
   docker run -d --rm --name apache2-rock -p 8080:80 \
     -v $(pwd)/html:/srv/www:ro \
     -v $(pwd)/apache2.conf:/etc/apache2/apache2.conf:ro \
-    apache2:devel
+    apache2:2.4-26.10
 
   # Wait for Apache to be ready (timeout after 30 seconds)
   timeout 30 bash -c 'until curl -sSf http://127.0.0.1:8080 >/dev/null; do sleep 1; done'

@@ -1,4 +1,4 @@
-project: apache2:devel
+project: apache2:2.4-26.10
 
 backends:
   craft:
@@ -23,10 +23,10 @@ suites:
       sudo apt remove --yes retry
 
       # Load the rock into docker
-      sudo rockcraft.skopeo --insecure-policy copy "oci-archive:$CRAFT_ARTIFACT" docker-daemon:apache2:devel
+      sudo rockcraft.skopeo --insecure-policy copy "oci-archive:$CRAFT_ARTIFACT" docker-daemon:apache2:2.4-26.10
 
     restore: |
-      docker image rm --force apache2:devel
+      docker image rm --force apache2:2.4-26.10
 
 
   spread/k8s/:
