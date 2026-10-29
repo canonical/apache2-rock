@@ -8,7 +8,8 @@ description: |
   The result has long been the number one web server on the Internet.
 
 base: bare
-build-base: ubuntu@26.10
+# TODO: Update once 26.10 is stabilized
+build-base: devel
 
 platforms:
   amd64:
@@ -34,14 +35,27 @@ environment:
 parts: 
   apache2:
     plugin: nil
-    stage-packages:
-      - base-files_base
-      - base-files_chisel
-      - base-files_release-info
-      - base-passwd_data
-      - apache2_core
-      - apache2_index
-      - tzdata_zoneinfo
+
+    # TODO: Uncomment once 26.10 is stabilized
+    # stage-packages:
+    #   - base-files_base
+    #   - base-files_chisel
+    #   - base-files_release-info
+    #   - base-passwd_data
+    #   - apache2_core
+    #   - apache2_index
+    #   - tzdata_zoneinfo
+
+    # TODO: Remove once 26.10 is stabilized
+    override-build: |
+      craftctl default
+      chisel cut --release ubuntu-26.10 --root ${CRAFT_PART_INSTALL} \
+        base-files_base \
+        base-files_release-info \
+        base-passwd_data \
+        apache2_core \
+        apache2_index \
+        tzdata_zoneinfo
     override-prime: |
       craftctl default
       echo "" > ${CRAFT_PRIME}/etc/apache2/envvars
@@ -50,10 +64,21 @@ parts:
     plugin: dump
     source: .
     source-type: local
-    stage-packages:
-      - coreutils_mkdir
-      - coreutils_chown
-      - dash_bins
+
+    # TODO: Uncomment once 26.10 is stabilized
+    # stage-packages:
+    #   - coreutils_mkdir
+    #   - coreutils_chown
+    #   - dash_bins
+
+    # TODO: Remove once 26.10 is stabilized
+    override-build: |
+      craftctl default
+      chisel cut --release ubuntu-26.10 --root ${CRAFT_PART_INSTALL} \
+        coreutils_mkdir \
+        coreutils_chown \
+        dash_bins
+
     organize: 
       'start-apache.sh': usr/local/bin/start-apache.sh
     stage:
