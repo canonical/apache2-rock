@@ -51,11 +51,14 @@ suites:
 
       # Bootstrap k8s and wait for it to be ready
       k8s bootstrap
-      k8s status --wait-ready
+      k8s status --wait-ready --timeout 15m
 
       # status --wait-ready returns before cilium finishes converging, so a service
       # deployed now may not route (nodeport backends unprogrammed) for ~35s -- past
       # the test's 30s wait. wait for kube-system to actually settle.
+      # `kubectl wait` errors out with "no matching resources found" if no pods
+      # exist yet, so first wait for the kube-system pods to be created.
+      timeout 300 bash -c 'until [ -n "$(k8s kubectl get pods --namespace kube-system --no-headers 2>/dev/null)" ]; do sleep 2; done'
       k8s kubectl wait --for=condition=Ready pods --all --namespace kube-system --timeout=5m
 
       # Copy the built image to the local registry
